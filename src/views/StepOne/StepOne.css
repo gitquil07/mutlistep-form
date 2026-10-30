@@ -30,13 +30,15 @@
   color: var(--color-muted);
 }
 
-.country-row__action--add.ant-btn:not(:disabled):hover,
-.country-row__action--add.ant-btn:not(:disabled):focus-visible {
+/* Scoped under .country-row so it outranks antd's own hover rule, which has the same
+   specificity and may load after this file (it does under Next.js) */
+.country-row .country-row__action--add.ant-btn:not(:disabled):hover,
+.country-row .country-row__action--add.ant-btn:not(:disabled):focus-visible {
   background: var(--color-navy);
   color: #fff;
 }
 
-.country-row__action--add.ant-btn:not(:disabled):active {
+.country-row .country-row__action--add.ant-btn:not(:disabled):active {
   background: var(--color-navy);
   color: #fff;
   opacity: 0.85;
