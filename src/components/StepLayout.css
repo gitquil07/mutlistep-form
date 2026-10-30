@@ -24,6 +24,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  /* Same height with or without the back button so titles line up across steps */
+  min-height: 32px;
 }
 
 .step-card__back.ant-btn,

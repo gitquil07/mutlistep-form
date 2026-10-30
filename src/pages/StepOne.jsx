@@ -103,7 +103,6 @@ const StepOne = () => {
     <StepLayout
       step={STEP}
       title="Покупка страхового полиса"
-      onBack={() => navigate(-1)}
       onStepClick={goToStep}
     >
       <form

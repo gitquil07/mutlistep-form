@@ -7,6 +7,7 @@ import { selectFurthestReachableStep } from "../store/formSlice";
 import "./StepLayout.css";
 
 // Shared card shell for every step: progress, back button, title and the footer note.
+// The back button is shown only when the page passes onBack (the first step has none).
 // onStepClick receives the step picked in the progress bar; pages route it through
 // the same handler as their own buttons so every way of moving behaves the same.
 const StepLayout = ({ step, title, onBack, onStepClick, children }) => {
@@ -22,14 +23,16 @@ const StepLayout = ({ step, title, onBack, onStepClick, children }) => {
             furthestReachable={furthestReachable}
             onStepClick={onStepClick}
           />
-          <Button
-            className="step-card__back"
-            type="primary"
-            shape="circle"
-            icon={<ArrowLeftOutlined />}
-            aria-label="Назад"
-            onClick={onBack}
-          />
+          {onBack && (
+            <Button
+              className="step-card__back"
+              type="primary"
+              shape="circle"
+              icon={<ArrowLeftOutlined />}
+              aria-label="Назад"
+              onClick={onBack}
+            />
+          )}
         </div>
 
         <h1 className="step-card__title">{title}</h1>
