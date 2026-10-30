@@ -1,37 +1,52 @@
 import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useDispatch, useSelector, useStore } from "react-redux";
 import { Navigate, useNavigate } from "react-router";
-import { App, Button, Modal, Radio, Table } from "antd";
+import { App, Button, Modal, Radio, Table, type TableColumnsType } from "antd";
 import { CheckCircleFilled, MinusOutlined } from "@ant-design/icons";
 import StepLayout from "../../components/StepLayout";
 import {
+  COVERAGE_KEYS,
   COVERAGE_LABELS,
   describeProgram,
   formatAmount,
 } from "../../constants/stepTwo";
-import { createStepTwoSchema } from "../../schemas/stepTwo";
+import type { CoverageKey, Program } from "../../data/programs";
+import {
+  createStepTwoSchema,
+  type StepTwoFormValues,
+} from "../../schemas/stepTwo";
 import { TOTAL_STEPS } from "../../constants/steps";
 import {
   saveStepTwo,
   selectAvailablePrograms,
   selectFurthestReachableStep,
 } from "../../store/formSlice";
+import { useAppDispatch, useAppSelector, useAppStore } from "../../store/hooks";
 import "./StepTwo.css";
 
 const STEP = 2;
 
-const compareRows = [
-  { key: "liability", label: "Общее покрытие", getAmount: (p) => p.liability },
-  ...Object.entries(COVERAGE_LABELS).map(([key, label]) => ({
+interface CompareRow {
+  key: "liability" | CoverageKey;
+  label: string;
+  getAmount: (program: Program) => number;
+}
+
+const compareRows: CompareRow[] = [
+  {
+    key: "liability",
+    label: "Общее покрытие",
+    getAmount: (program) => program.liability,
+  },
+  ...COVERAGE_KEYS.map((key) => ({
     key,
-    label,
-    getAmount: (p) => p.coverages[key],
+    label: COVERAGE_LABELS[key],
+    getAmount: (program: Program) => program.coverages[key],
   })),
 ];
 
-const renderCompareCell = (program, row) => {
+const renderCompareCell = (program: Program, row: CompareRow) => {
   const amount = row.getAmount(program);
   return amount > 0 ? (
     <span
@@ -49,26 +64,28 @@ const renderCompareCell = (program, row) => {
   );
 };
 
-const getCompareColumns = (programs) => [
+const getCompareColumns = (
+  programs: Program[],
+): TableColumnsType<CompareRow> => [
   { title: "", dataIndex: "label", key: "label" },
   ...programs.map((program) => ({
     title: program.name,
     key: program.id,
-    align: "center",
-    render: (_, row) => renderCompareCell(program, row),
+    align: "center" as const,
+    render: (_: unknown, row: CompareRow) => renderCompareCell(program, row),
   })),
 ];
 
 const StepTwo = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { message } = App.useApp();
-  const furthestReachable = useSelector(selectFurthestReachableStep);
+  const furthestReachable = useAppSelector(selectFurthestReachableStep);
   // Countries can't change while this page is open, so neither can the programs
-  const programs = useSelector(selectAvailablePrograms);
-  const store = useStore();
-  const [defaultValues] = useState(() => {
-    const saved = store.getState().form.stepTwo?.program;
+  const programs = useAppSelector(selectAvailablePrograms);
+  const store = useAppStore();
+  const [defaultValues] = useState((): StepTwoFormValues => {
+    const saved = store.getState().form.stepTwo?.program ?? null;
     // Drop a choice made for countries that have since changed
     const stillAvailable = programs.some((program) => program.id === saved);
     return { program: stillAvailable ? saved : null };
@@ -101,7 +118,7 @@ const StepTwo = () => {
   }
 
   // Same rules as step one: back never validates, forward always does
-  const goToStep = (target) => {
+  const goToStep = (target: number) => {
     if (target < STEP) {
       navigate(`/step-${target}`);
       return;
@@ -112,7 +129,7 @@ const StepTwo = () => {
         const chosen = programs.find(
           (program) => program.id === values.program,
         );
-        message.success(`Программа ${chosen.name} выбрана`);
+        if (chosen) message.success(`Программа ${chosen.name} выбрана`);
         return;
       }
       navigate(`/step-${target}`);

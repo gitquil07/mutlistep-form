@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
-import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
+import {
+  Controller,
+  useFieldArray,
+  useForm,
+  useWatch,
+  type FieldError,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useDispatch, useStore } from "react-redux";
 import { useNavigate } from "react-router";
-import { Button, Form, Input, Select } from "antd";
+import { Button, Form, Input, Select, type FormItemProps } from "antd";
 import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
 import dayjs from "../lib/dayjs";
 import StepLayout from "../components/StepLayout";
@@ -21,6 +26,7 @@ import {
 } from "../constants/stepOne";
 import { stepOneSchema } from "../schemas/stepOne";
 import { saveStepOne } from "../store/formSlice";
+import { useAppDispatch, useAppStore } from "../store/hooks";
 import { fromStepOneForm, toStepOneForm } from "../store/serializers";
 import "./StepOne.css";
 
@@ -42,13 +48,16 @@ const phoneCodeOptions = PHONE_CODES.map((code) => ({
   ),
 }));
 
-const errorProps = (error) =>
+const errorProps = (
+  // Only the message is used; date fields (Dayjs objects) get a nested error type
+  error: Pick<FieldError, "message"> | undefined,
+): Pick<FormItemProps, "validateStatus" | "help"> =>
   error ? { validateStatus: "error", help: error.message } : {};
 
 const StepOne = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const store = useStore();
+  const store = useAppStore();
   // Read the saved draft once; subscribing would re-render on every synced keystroke
   const [defaultValues] = useState(() =>
     toStepOneForm(store.getState().form.stepOne),
@@ -91,7 +100,7 @@ const StepOne = () => {
 
   // Single entry point for "Далее" and the progress bar: going forward validates
   // and shows the same inline errors, going back never does.
-  const goToStep = (target) => {
+  const goToStep = (target: number) => {
     if (target < STEP) {
       navigate(`/step-${target}`);
       return;

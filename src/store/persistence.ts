@@ -5,12 +5,13 @@ const STORAGE_KEY = "insurance-form";
 const VERSION = 3;
 const MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
 
-// Shape check only (drafts may be incomplete); real validation is done by the step schemas
+// Shape check only (drafts may be incomplete); real validation is done by the step schemas.
+// The Redux form slice uses the same shape, so its types are inferred from here.
 const storedFormSchema = z.object({
   stepOne: z
     .object({
       countries: z.array(z.number().nullable()),
-      coverType: z.string(),
+      coverType: z.enum(["single", "multi"]),
       startDate: z.string().nullable(),
       endDate: z.string().nullable(),
       purpose: z.number(),
@@ -21,6 +22,16 @@ const storedFormSchema = z.object({
   stepTwo: z.object({ program: z.number().nullable() }).nullable(),
 });
 
+const storedEnvelopeSchema = z.object({
+  version: z.number(),
+  savedAt: z.number(),
+  form: z.unknown(),
+});
+
+export type FormState = z.infer<typeof storedFormSchema>;
+export type StepOneStored = NonNullable<FormState["stepOne"]>;
+export type StepTwoStored = NonNullable<FormState["stepTwo"]>;
+
 const clear = () => {
   try {
     localStorage.removeItem(STORAGE_KEY);
@@ -29,16 +40,17 @@ const clear = () => {
   }
 };
 
-export const loadFormState = () => {
+export const loadFormState = (): FormState | undefined => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return undefined;
 
-    const { version, savedAt, form } = JSON.parse(raw);
-    const parsed = storedFormSchema.safeParse(form);
+    const envelope = storedEnvelopeSchema.safeParse(JSON.parse(raw));
+    const parsed = storedFormSchema.safeParse(envelope.data?.form);
     if (
-      version !== VERSION ||
-      Date.now() - savedAt > MAX_AGE_MS ||
+      !envelope.success ||
+      envelope.data.version !== VERSION ||
+      Date.now() - envelope.data.savedAt > MAX_AGE_MS ||
       !parsed.success
     ) {
       clear();
@@ -51,7 +63,7 @@ export const loadFormState = () => {
   }
 };
 
-export const saveFormState = (form) => {
+export const saveFormState = (form: FormState): void => {
   try {
     localStorage.setItem(
       STORAGE_KEY,

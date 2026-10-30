@@ -1,10 +1,12 @@
+import type { Dayjs } from "dayjs";
 import dayjs from "../lib/dayjs";
 import { z } from "zod";
 import { PURPOSE_OPTIONS, phoneLength } from "../constants/stepOne";
 
-const date = z.custom((value) => dayjs.isDayjs(value) && value.isValid(), {
-  message: "Укажите дату",
-});
+const date = z.custom<Dayjs>(
+  (value) => dayjs.isDayjs(value) && value.isValid(),
+  { message: "Укажите дату" },
+);
 
 export const stepOneSchema = z
   .object({
@@ -54,3 +56,6 @@ export const stepOneSchema = z
       });
     }
   });
+
+// What the step one form holds; drafts may still fail the refinements above
+export type StepOneFormValues = z.input<typeof stepOneSchema>;

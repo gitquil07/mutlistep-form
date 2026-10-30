@@ -1,10 +1,27 @@
-import { Radio } from "antd";
+import { Radio, type RadioGroupProps } from "antd";
 import { CheckCircleFilled } from "@ant-design/icons";
+import type { Option } from "../types";
 import "./CheckRadioGroup.css";
+
+interface CheckRadioGroupProps<T extends string | number> extends Omit<
+  RadioGroupProps,
+  "options" | "value" | "onChange"
+> {
+  options: Option<T>[];
+  value: T;
+  onChange: (value: T) => void;
+  direction?: "vertical" | "horizontal";
+}
 
 // Radio group styled as the design's check-circle options; the native antd radio
 // stays in the DOM (visually hidden) so keyboard navigation keeps working.
-const CheckRadioGroup = ({ options, value, onChange, direction = "vertical", ...rest }) => (
+const CheckRadioGroup = <T extends string | number>({
+  options,
+  value,
+  onChange,
+  direction = "vertical",
+  ...rest
+}: CheckRadioGroupProps<T>) => (
   <Radio.Group
     {...rest}
     value={value}
@@ -15,7 +32,10 @@ const CheckRadioGroup = ({ options, value, onChange, direction = "vertical", ...
       <Radio
         key={option.value}
         value={option.value}
-        classNames={{ icon: "check-radio__native", label: "check-radio__label" }}
+        classNames={{
+          icon: "check-radio__native",
+          label: "check-radio__label",
+        }}
       >
         <CheckCircleFilled
           className={`check-radio__icon${value === option.value ? " check-radio__icon--checked" : ""}`}

@@ -1,17 +1,32 @@
-import { useSelector } from "react-redux";
+import type { ReactNode } from "react";
 import { Button } from "antd";
 import { ArrowLeftOutlined, InfoCircleFilled } from "@ant-design/icons";
 import StepProgress from "./StepProgress";
 import { TOTAL_STEPS } from "../constants/steps";
 import { selectFurthestReachableStep } from "../store/formSlice";
+import { useAppSelector } from "../store/hooks";
 import "./StepLayout.css";
+
+interface StepLayoutProps {
+  step: number;
+  title: string;
+  onBack?: () => void;
+  onStepClick: (step: number) => void;
+  children: ReactNode;
+}
 
 // Shared card shell for every step: progress, back button, title and the footer note.
 // The back button is shown only when the page passes onBack (the first step has none).
 // onStepClick receives the step picked in the progress bar; pages route it through
 // the same handler as their own buttons so every way of moving behaves the same.
-const StepLayout = ({ step, title, onBack, onStepClick, children }) => {
-  const furthestReachable = useSelector(selectFurthestReachableStep);
+const StepLayout = ({
+  step,
+  title,
+  onBack,
+  onStepClick,
+  children,
+}: StepLayoutProps) => {
+  const furthestReachable = useAppSelector(selectFurthestReachableStep);
 
   return (
     <main className="step-page">

@@ -2,7 +2,14 @@ import { Tooltip } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import "./FieldHeader.css";
 
-const FieldHeader = ({ title, htmlFor, hint }) => (
+interface FieldHeaderProps {
+  title: string;
+  // Id of the control the title labels; without it the title is plain text
+  htmlFor?: string;
+  hint?: string;
+}
+
+const FieldHeader = ({ title, htmlFor, hint }: FieldHeaderProps) => (
   <div className="field-header">
     {htmlFor ? (
       <label className="field-header__title" htmlFor={htmlFor}>

@@ -1,7 +1,14 @@
 // Generated from the provided data.js ("contries"). Each country keeps only the ids of
 // the programs sold for it. Ids 98 and 161 appeared twice (the same country under two
 // spellings); only the first entry is kept so ids stay unique.
-export const COUNTRIES = [
+export interface Country {
+  id: number;
+  name: string;
+  isInSchengen: boolean;
+  programIds: number[];
+}
+
+export const COUNTRIES: readonly Country[] = [
   { id: 1, name: "АВСТРАЛИЯ", isInSchengen: false, programIds: [3, 4] },
   { id: 3, name: "АВСТРИЯ", isInSchengen: true, programIds: [2, 3, 4] },
   { id: 4, name: "АЗЕРБАЙДЖАН", isInSchengen: false, programIds: [1, 2, 3, 4] },

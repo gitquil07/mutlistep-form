@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router";
 import { App as AntApp, ConfigProvider } from "antd";
 import ruRU from "antd/locale/ru_RU";
-import { useSelector } from "react-redux";
 import { selectFurthestReachableStep } from "./store/formSlice";
+import { useAppSelector } from "./store/hooks";
 import StepOne from "./pages/StepOne";
 import StepTwo from "./pages/StepTwo/StepTwo";
 
@@ -27,7 +27,7 @@ const theme = {
 
 // Returning users continue from the first step that still needs work
 const ResumeRedirect = () => {
-  const furthestReachable = useSelector(selectFurthestReachableStep);
+  const furthestReachable = useAppSelector(selectFurthestReachableStep);
   return <Navigate to={`/step-${furthestReachable}`} replace />;
 };
 

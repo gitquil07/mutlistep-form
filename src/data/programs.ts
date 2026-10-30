@@ -1,5 +1,20 @@
 // Generated from the provided data.js ("programs"). Amounts are the insured sums.
-export const PROGRAMS = [
+export type CoverageKey =
+  | "medicine"
+  | "accident"
+  | "covid"
+  | "evacuation"
+  | "transportation"
+  | "compensation";
+
+export interface Program {
+  id: number;
+  name: string;
+  liability: number;
+  coverages: Record<CoverageKey, number>;
+}
+
+export const PROGRAMS: readonly Program[] = [
   {
     id: 1,
     name: "Silver",

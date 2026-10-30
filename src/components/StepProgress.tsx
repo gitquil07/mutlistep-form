@@ -3,7 +3,19 @@ import "./StepProgress.css";
 
 // Segments are: the current step (not a link), reachable steps (links whose click is
 // handed to onStepClick so moving forward validates like "Далее"), and locked steps.
-const StepProgress = ({ current, total, furthestReachable, onStepClick }) => (
+interface StepProgressProps {
+  current: number;
+  total: number;
+  furthestReachable: number;
+  onStepClick: (step: number) => void;
+}
+
+const StepProgress = ({
+  current,
+  total,
+  furthestReachable,
+  onStepClick,
+}: StepProgressProps) => (
   <nav className="step-progress" aria-label="Шаги оформления">
     {Array.from({ length: total }, (_, index) => {
       const step = index + 1;

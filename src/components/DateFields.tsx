@@ -1,10 +1,12 @@
 import { useState } from "react";
+import type { Dayjs } from "dayjs";
 import dayjs from "../lib/dayjs";
-import { Button, Calendar, Popover, Select } from "antd";
+import { Button, Calendar, Popover, Select, type SelectProps } from "antd";
 import { CalendarOutlined } from "@ant-design/icons";
 import "./DateFields.css";
 
-const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
+const capitalize = (text: string) =>
+  text.charAt(0).toUpperCase() + text.slice(1);
 
 const MONTH_OPTIONS = Array.from({ length: 12 }, (_, month) => ({
   value: month,
@@ -12,7 +14,9 @@ const MONTH_OPTIONS = Array.from({ length: 12 }, (_, month) => ({
 }));
 
 // Changes one part of the date, clamping the day so e.g. 31 Jan -> Feb stays in February
-const setPart = (date, part, value) => {
+type DatePart = "day" | "month" | "year";
+
+const setPart = (date: Dayjs, part: DatePart, value: number): Dayjs => {
   const year = part === "year" ? value : date.year();
   const month = part === "month" ? value : date.month();
   const day = part === "day" ? value : date.date();
@@ -20,7 +24,21 @@ const setPart = (date, part, value) => {
   return base.date(Math.min(day, base.daysInMonth()));
 };
 
-const DateFields = ({ id, value, onChange, minDate, status }) => {
+interface DateFieldsProps {
+  id: string;
+  value: Dayjs | null;
+  onChange: (value: Dayjs) => void;
+  minDate: Dayjs;
+  status?: SelectProps["status"];
+}
+
+const DateFields = ({
+  id,
+  value,
+  onChange,
+  minDate,
+  status,
+}: DateFieldsProps) => {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const date = value ?? minDate;
   const currentYear = dayjs().year();

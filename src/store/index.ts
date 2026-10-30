@@ -13,10 +13,14 @@ export const store = configureStore({
   preloadedState: savedForm ? { form: savedForm } : undefined,
 });
 
+export type AppStore = typeof store;
+export type RootState = ReturnType<AppStore["getState"]>;
+export type AppDispatch = AppStore["dispatch"];
+
 // Write the form slice to localStorage shortly after it changes (drafts update on every
 // keystroke), and immediately when the page is hidden or closed so nothing is lost.
 let lastSaved = store.getState().form;
-let saveTimer;
+let saveTimer: ReturnType<typeof setTimeout> | undefined;
 
 const flush = () => {
   clearTimeout(saveTimer);
