@@ -10,11 +10,23 @@ const initialState = {
   stepTwo: null,
 };
 
+// Chosen countries as a comparable key: order and empty (not yet picked) rows don't matter
+const countriesKey = (stepOne) =>
+  (stepOne?.countries ?? [])
+    .filter((id) => id != null)
+    .sort((a, b) => a - b)
+    .join(",");
+
 const formSlice = createSlice({
   name: "form",
   initialState,
   reducers: {
     saveStepOne(state, action) {
+      // Programs are chosen for specific destinations, so a different set of countries
+      // starts the program choice over, even if the same programs are on offer
+      if (countriesKey(state.stepOne) !== countriesKey(action.payload)) {
+        state.stepTwo = null;
+      }
       state.stepOne = action.payload;
     },
     saveStepTwo(state, action) {
