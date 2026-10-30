@@ -1,0 +1,17 @@
+.step-progress {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  max-width: 260px;
+}
+
+.step-progress__segment {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--color-muted-bg);
+}
+
+.step-progress__segment--done {
+  background: var(--color-green);
+}

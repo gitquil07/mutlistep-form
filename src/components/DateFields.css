@@ -1,0 +1,26 @@
+.date-fields {
+  display: flex;
+  gap: 8px;
+}
+
+.date-fields__day {
+  flex: 0 0 76px;
+}
+
+.date-fields__month {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.date-fields__year {
+  flex: 0 0 92px;
+}
+
+.date-fields__calendar-btn.ant-btn {
+  flex: 0 0 auto;
+  color: var(--color-muted);
+}
+
+.date-fields__calendar {
+  width: 280px;
+}
