@@ -15,10 +15,9 @@ export const COVER_OPTIONS = [
 // Kept in the API's { id, name } shape so it can later be replaced by a request
 export const ACTIVITIES = [
   { id: 0, name: "Туризм" },
-  { id: 1, name: "Спорт" },
   { id: 2, name: "Работа" },
   { id: 4, name: "Учёба" },
-  { id: 3, name: "SPORT/WORK" },
+  { id: 1, name: "Спорт" },
 ];
 
 export const PURPOSE_OPTIONS = ACTIVITIES.map(({ id, name }) => ({
