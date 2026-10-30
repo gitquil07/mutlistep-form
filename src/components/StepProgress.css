@@ -5,13 +5,12 @@
   max-width: 260px;
 }
 
-/* The link is taller than the visible line so it is easy to click */
+/* Taller than the visible line so links are easy to click */
 .step-progress__segment {
   flex: 1;
   display: flex;
   align-items: center;
   height: 20px;
-  cursor: pointer;
 }
 
 .step-progress__segment::before {
@@ -23,17 +22,28 @@
   transition: background 0.2s;
 }
 
-.step-progress__segment:hover::before {
-  background: var(--color-muted);
-}
-
-.step-progress__segment--current::before,
-.step-progress__segment--current:hover::before {
+.step-progress__segment--current::before {
   background: var(--color-green);
 }
 
-.step-progress__segment:focus-visible {
+.step-progress__segment--link {
+  cursor: pointer;
+}
+
+.step-progress__segment--link:hover::before {
+  background: var(--color-muted);
+}
+
+.step-progress__segment--link:focus-visible {
   outline: 2px solid var(--color-green);
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+.step-progress__segment--locked {
+  cursor: not-allowed;
+}
+
+.step-progress__segment--locked::before {
+  opacity: 0.5;
 }

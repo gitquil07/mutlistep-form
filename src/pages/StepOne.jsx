@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,29 +21,10 @@ import {
 } from "../constants/stepOne";
 import { stepOneSchema } from "../schemas/stepOne";
 import { saveStepOne } from "../store/formSlice";
+import { fromStepOneForm, toStepOneForm } from "../store/serializers";
 import "./StepOne.css";
 
-const getDefaultValues = (saved) => {
-  if (saved) {
-    return {
-      ...saved,
-      countries: saved.countries.map((value) => ({ value })),
-      phone: formatPhone(saved.phone, saved.phoneCode),
-      startDate: dayjs(saved.startDate),
-      endDate: dayjs(saved.endDate),
-    };
-  }
-  const startDate = dayjs().add(1, "day").startOf("day");
-  return {
-    countries: [{ value: COUNTRIES[0].value }],
-    coverType: "single",
-    startDate,
-    endDate: startDate.add(7, "day"),
-    purpose: "tourism",
-    phoneCode: "uz",
-    phone: "",
-  };
-};
+const STEP = 1;
 
 const phoneCodeOptions = PHONE_CODES.map((code) => ({
   value: code.value,
@@ -76,7 +58,7 @@ const StepOne = () => {
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(stepOneSchema),
-    defaultValues: getDefaultValues(saved),
+    defaultValues: toStepOneForm(saved),
   });
   const { fields, append, remove } = useFieldArray({
     control,
@@ -86,26 +68,41 @@ const StepOne = () => {
   const startDate = useWatch({ control, name: "startDate" });
   const phoneCode = useWatch({ control, name: "phoneCode" });
 
-  const onSubmit = (values) => {
-    dispatch(
-      saveStepOne({
-        ...values,
-        countries: values.countries.map((country) => country.value),
-        startDate: values.startDate.format("YYYY-MM-DD"),
-        endDate: values.endDate.format("YYYY-MM-DD"),
-        phone: values.phone.replace(/\D/g, ""),
-      }),
-    );
-    navigate("/step-2");
+  // Whatever way the user leaves this page, keep their edits as a draft.
+  // Drafts are not validated; the completion selector decides if the step counts as done.
+  useEffect(
+    () => () => dispatch(saveStepOne(fromStepOneForm(getValues()))),
+    [dispatch, getValues],
+  );
+
+  // Single entry point for "Далее" and the progress bar: going forward validates
+  // and shows the same inline errors, going back never does.
+  const goToStep = (target) => {
+    if (target < STEP) {
+      navigate(`/step-${target}`);
+      return;
+    }
+    handleSubmit((values) => {
+      dispatch(saveStepOne(fromStepOneForm(values)));
+      navigate(`/step-${target}`);
+    })();
   };
 
   return (
     <StepLayout
-      step={1}
+      step={STEP}
       title="Покупка страхового полиса"
       onBack={() => navigate(-1)}
+      onStepClick={goToStep}
     >
-      <form className="step-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form
+        className="step-form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          goToStep(STEP + 1);
+        }}
+        noValidate
+      >
         <section className="step-form__field">
           <FieldHeader
             title="Страна путешествия"

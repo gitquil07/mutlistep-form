@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,8 +16,14 @@ import {
   getProgram,
 } from "../../constants/stepTwo";
 import { stepTwoSchema } from "../../schemas/stepTwo";
-import { saveStepTwo } from "../../store/formSlice";
+import { TOTAL_STEPS } from "../../constants/steps";
+import {
+  saveStepTwo,
+  selectFurthestReachableStep,
+} from "../../store/formSlice";
 import "./StepTwo.css";
+
+const STEP = 2;
 
 const renderCompareCell = (program, row) => {
   if (row.key === "coverage") {
@@ -51,34 +57,56 @@ const StepTwo = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { message } = App.useApp();
-  const stepOne = useSelector((state) => state.form.stepOne);
+  const furthestReachable = useSelector(selectFurthestReachableStep);
   const saved = useSelector((state) => state.form.stepTwo);
   const [compareOpen, setCompareOpen] = useState(false);
 
-  const { control, handleSubmit } = useForm({
+  const { control, handleSubmit, getValues } = useForm({
     resolver: zodResolver(stepTwoSchema),
     defaultValues: { program: saved?.program ?? null },
   });
   const selected = getProgram(useWatch({ control, name: "program" }));
 
-  if (!stepOne) {
-    return <Navigate to="/step-1" replace />;
+  // Keep the selection as a draft whichever way the user leaves the page
+  useEffect(
+    () => () => dispatch(saveStepTwo(getValues())),
+    [dispatch, getValues],
+  );
+
+  // Typed URL or browser navigation: send the user to the first step that still needs work
+  if (furthestReachable < STEP) {
+    return <Navigate to={`/step-${furthestReachable}`} replace />;
   }
 
-  const onSubmit = (values) => {
-    dispatch(saveStepTwo(values));
-    message.success(`Программа ${getProgram(values.program).name} выбрана`);
+  // Same rules as step one: back never validates, forward always does
+  const goToStep = (target) => {
+    if (target < STEP) {
+      navigate(`/step-${target}`);
+      return;
+    }
+    handleSubmit((values) => {
+      dispatch(saveStepTwo(values));
+      if (target > TOTAL_STEPS) {
+        message.success(`Программа ${getProgram(values.program).name} выбрана`);
+        return;
+      }
+      navigate(`/step-${target}`);
+    })();
   };
 
   return (
     <StepLayout
-      step={2}
+      step={STEP}
       title="Выберите программу"
-      onBack={() => navigate("/step-1")}
+      onBack={() => goToStep(STEP - 1)}
+      onStepClick={goToStep}
     >
       <form
         className="program-form"
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={(event) => {
+          event.preventDefault();
+          goToStep(STEP + 1);
+        }}
         noValidate
       >
         <Controller
