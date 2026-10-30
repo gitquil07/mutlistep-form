@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, useStore } from "react-redux";
 import { Navigate, useNavigate } from "react-router";
 import { App, Button, Modal, Radio, Table } from "antd";
 import {
@@ -58,19 +58,26 @@ const StepTwo = () => {
   const navigate = useNavigate();
   const { message } = App.useApp();
   const furthestReachable = useSelector(selectFurthestReachableStep);
-  const saved = useSelector((state) => state.form.stepTwo);
+  const store = useStore();
+  const [defaultValues] = useState(() => ({
+    program: store.getState().form.stepTwo?.program ?? null,
+  }));
   const [compareOpen, setCompareOpen] = useState(false);
 
-  const { control, handleSubmit, getValues } = useForm({
+  const { control, handleSubmit, subscribe } = useForm({
     resolver: zodResolver(stepTwoSchema),
-    defaultValues: { program: saved?.program ?? null },
+    defaultValues,
   });
   const selected = getProgram(useWatch({ control, name: "program" }));
 
-  // Keep the selection as a draft whichever way the user leaves the page
+  // Keep the selection as a draft in the store (and so in localStorage) as soon as it changes
   useEffect(
-    () => () => dispatch(saveStepTwo(getValues())),
-    [dispatch, getValues],
+    () =>
+      subscribe({
+        formState: { values: true },
+        callback: ({ values }) => dispatch(saveStepTwo(values)),
+      }),
+    [subscribe, dispatch],
   );
 
   // Typed URL or browser navigation: send the user to the first step that still needs work

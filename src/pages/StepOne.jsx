@@ -1,7 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useStore } from "react-redux";
 import { useNavigate } from "react-router";
 import { Button, Form, Input, Select } from "antd";
 import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
@@ -48,17 +48,22 @@ const errorProps = (error) =>
 const StepOne = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const saved = useSelector((state) => state.form.stepOne);
+  const store = useStore();
+  // Read the saved draft once; subscribing would re-render on every synced keystroke
+  const [defaultValues] = useState(() =>
+    toStepOneForm(store.getState().form.stepOne),
+  );
 
   const {
     control,
     handleSubmit,
     getValues,
     setValue,
+    subscribe,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(stepOneSchema),
-    defaultValues: toStepOneForm(saved),
+    defaultValues,
   });
   const { fields, append, remove } = useFieldArray({
     control,
@@ -68,11 +73,17 @@ const StepOne = () => {
   const startDate = useWatch({ control, name: "startDate" });
   const phoneCode = useWatch({ control, name: "phoneCode" });
 
-  // Whatever way the user leaves this page, keep their edits as a draft.
-  // Drafts are not validated; the completion selector decides if the step counts as done.
+  // Keep every edit as a draft in the store (and so in localStorage), so leaving the
+  // page or closing the browser never loses input. Drafts are not validated; the
+  // completion selector decides if the step counts as done.
   useEffect(
-    () => () => dispatch(saveStepOne(fromStepOneForm(getValues()))),
-    [dispatch, getValues],
+    () =>
+      subscribe({
+        formState: { values: true },
+        callback: ({ values }) =>
+          dispatch(saveStepOne(fromStepOneForm(values))),
+      }),
+    [subscribe, dispatch],
   );
 
   // Single entry point for "Далее" and the progress bar: going forward validates
