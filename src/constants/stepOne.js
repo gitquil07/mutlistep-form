@@ -1,5 +1,3 @@
-export const TOTAL_STEPS = 5;
-
 export const COUNTRIES = [
   { value: "lv", label: "Латвия" },
   { value: "de", label: "Германия" },

@@ -1,0 +1,117 @@
+.program-form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.program-list.ant-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.program-card.ant-radio-wrapper {
+  position: relative;
+  display: flex;
+  margin-inline-end: 0;
+  padding: 10px 12px;
+  border: 1px solid #d6d8e3;
+  border-radius: 8px;
+  background: var(--color-option-bg);
+  transition:
+    background 0.2s,
+    box-shadow 0.2s;
+}
+
+.program-card--checked.ant-radio-wrapper {
+  background: var(--color-surface);
+  box-shadow: 0 2px 8px rgba(27, 43, 122, 0.12);
+}
+
+.program-card.ant-radio-wrapper:has(:focus-visible) {
+  outline: 2px solid var(--color-green);
+  outline-offset: 2px;
+}
+
+.program-card .program-card__native {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.program-card .program-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-inline: 0;
+}
+
+.program-card__name {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.program-card__icon {
+  font-size: 16px;
+  color: var(--color-muted);
+  transition: color 0.2s;
+}
+
+.program-card__coverage {
+  padding-left: 24px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-navy);
+  transition: color 0.2s;
+}
+
+.program-card__description {
+  padding-left: 24px;
+  font-size: 12px;
+  color: var(--color-text);
+}
+
+.program-card--checked .program-card__name,
+.program-card--checked .program-card__icon,
+.program-card--checked .program-card__coverage {
+  color: var(--color-green);
+}
+
+.program-form__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 96px;
+}
+
+.program-form__compare.ant-btn {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+.program-form__submit.ant-btn {
+  justify-content: flex-start;
+  box-shadow: none;
+}
+
+.program-compare__coverage {
+  font-weight: 700;
+  color: var(--color-navy);
+  white-space: nowrap;
+}
+
+.program-compare__yes {
+  color: var(--color-green);
+}
+
+.program-compare__no {
+  color: var(--color-muted);
+}

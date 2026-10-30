@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router";
 import { App as AntApp, ConfigProvider } from "antd";
 import ruRU from "antd/locale/ru_RU";
 import StepOne from "./pages/StepOne";
+import StepTwo from "./pages/StepTwo/StepTwo";
 
 const theme = {
   token: {
@@ -30,6 +31,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/step-1" replace />} />
             <Route path="/step-1" element={<StepOne />} />
+            <Route path="/step-2" element={<StepTwo />} />
           </Routes>
         </BrowserRouter>
       </AntApp>
