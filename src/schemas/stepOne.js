@@ -1,6 +1,6 @@
 import dayjs from "../lib/dayjs";
 import { z } from "zod";
-import { phoneLength } from "../constants/stepOne";
+import { PURPOSE_OPTIONS, phoneLength } from "../constants/stepOne";
 
 const date = z.custom((value) => dayjs.isDayjs(value) && value.isValid(), {
   message: "Укажите дату",
@@ -25,7 +25,7 @@ export const stepOneSchema = z
     coverType: z.enum(["single", "multi"]),
     startDate: date,
     endDate: date,
-    purpose: z.enum(["tourism", "work", "study", "sport"]),
+    purpose: z.literal(PURPOSE_OPTIONS.map((option) => option.value)),
     phoneCode: z.string(),
     phone: z.string(),
   })
@@ -44,7 +44,9 @@ export const stepOneSchema = z
         message: "Дата окончания раньше даты начала",
       });
     }
-    if (values.phone.replace(/\D/g, "").length !== phoneLength(values.phoneCode)) {
+    if (
+      values.phone.replace(/\D/g, "").length !== phoneLength(values.phoneCode)
+    ) {
       ctx.addIssue({
         code: "custom",
         path: ["phone"],

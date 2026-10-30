@@ -1,5 +1,5 @@
 import dayjs from "../lib/dayjs";
-import { COUNTRIES, formatPhone } from "../constants/stepOne";
+import { COUNTRIES, PURPOSE_OPTIONS, formatPhone } from "../constants/stepOne";
 
 // Redux keeps plain serializable values; the form works with dayjs objects,
 // { value } rows for useFieldArray and a formatted phone. These convert both ways.
@@ -20,7 +20,7 @@ export const toStepOneForm = (saved) => {
     coverType: "single",
     startDate,
     endDate: startDate.add(7, "day"),
-    purpose: "tourism",
+    purpose: PURPOSE_OPTIONS[0].value,
     phoneCode: "uz",
     phone: "",
   };

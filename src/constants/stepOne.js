@@ -18,12 +18,19 @@ export const COVER_OPTIONS = [
   { value: "multi", label: "Многократное путешествие" },
 ];
 
-export const PURPOSE_OPTIONS = [
-  { value: "tourism", label: "Туризм" },
-  { value: "work", label: "Работа" },
-  { value: "study", label: "Учёба" },
-  { value: "sport", label: "Спорт" },
+// Kept in the API's { id, name } shape so it can later be replaced by a request
+export const ACTIVITIES = [
+  { id: 0, name: "Туризм" },
+  { id: 1, name: "Спорт" },
+  { id: 2, name: "Работа" },
+  { id: 4, name: "Учёба" },
+  { id: 3, name: "SPORT/WORK" },
 ];
+
+export const PURPOSE_OPTIONS = ACTIVITIES.map(({ id, name }) => ({
+  value: id,
+  label: name,
+}));
 
 // `groups` describes how the local number is split when displayed, e.g. 90 123 45 67
 export const PHONE_CODES = [

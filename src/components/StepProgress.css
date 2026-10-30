@@ -2,7 +2,6 @@
   display: flex;
   gap: 8px;
   flex: 1;
-  max-width: 260px;
 }
 
 /* Taller than the visible line so links are easy to click */
