@@ -30,6 +30,18 @@
   color: var(--color-muted);
 }
 
+.country-row__action--add.ant-btn:not(:disabled):hover,
+.country-row__action--add.ant-btn:not(:disabled):focus-visible {
+  background: var(--color-navy);
+  color: #fff;
+}
+
+.country-row__action--add.ant-btn:not(:disabled):active {
+  background: var(--color-navy);
+  color: #fff;
+  opacity: 0.85;
+}
+
 .phone-row {
   display: flex;
   gap: 8px;

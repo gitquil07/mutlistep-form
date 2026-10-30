@@ -166,7 +166,7 @@ const StepOne = () => {
                 </Form.Item>
                 {isFirst ? (
                   <Button
-                    className="country-row__action"
+                    className="country-row__action country-row__action--add"
                     variant="filled"
                     color="default"
                     icon={<PlusOutlined />}
