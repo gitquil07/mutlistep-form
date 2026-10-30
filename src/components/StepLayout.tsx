@@ -1,3 +1,5 @@
+"use client";
+
 import type { ReactNode } from "react";
 import { Button } from "antd";
 import { ArrowLeftOutlined, InfoCircleFilled } from "@ant-design/icons";

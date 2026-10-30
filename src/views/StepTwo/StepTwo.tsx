@@ -1,7 +1,9 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Navigate, useNavigate } from "react-router";
+import { useRouter } from "next/navigation";
 import { App, Button, Modal, Radio, Table, type TableColumnsType } from "antd";
 import { CheckCircleFilled, MinusOutlined } from "@ant-design/icons";
 import StepLayout from "../../components/StepLayout";
@@ -78,7 +80,7 @@ const getCompareColumns = (
 
 const StepTwo = () => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { message } = App.useApp();
   const furthestReachable = useAppSelector(selectFurthestReachableStep);
   // Countries can't change while this page is open, so neither can the programs
@@ -113,14 +115,17 @@ const StepTwo = () => {
   );
 
   // Typed URL or browser navigation: send the user to the first step that still needs work
-  if (furthestReachable < STEP) {
-    return <Navigate to={`/step-${furthestReachable}`} replace />;
-  }
+  const blocked = furthestReachable < STEP;
+  useEffect(() => {
+    if (blocked) router.replace(`/step-${furthestReachable}`);
+  }, [blocked, furthestReachable, router]);
+
+  if (blocked) return null;
 
   // Same rules as step one: back never validates, forward always does
   const goToStep = (target: number) => {
     if (target < STEP) {
-      navigate(`/step-${target}`);
+      router.push(`/step-${target}`);
       return;
     }
     handleSubmit((values) => {
@@ -132,7 +137,7 @@ const StepTwo = () => {
         if (chosen) message.success(`Программа ${chosen.name} выбрана`);
         return;
       }
-      navigate(`/step-${target}`);
+      router.push(`/step-${target}`);
     })();
   };
 

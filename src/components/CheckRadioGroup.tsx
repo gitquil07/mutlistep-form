@@ -1,3 +1,5 @@
+"use client";
+
 import { Radio, type RadioGroupProps } from "antd";
 import { CheckCircleFilled } from "@ant-design/icons";
 import type { Option } from "../types";

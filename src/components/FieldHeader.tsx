@@ -1,3 +1,5 @@
+"use client";
+
 import { Tooltip } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import "./FieldHeader.css";

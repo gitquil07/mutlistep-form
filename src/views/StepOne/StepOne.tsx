@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import {
   Controller,
@@ -7,14 +9,14 @@ import {
   type FieldError,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "react-router";
+import { useRouter } from "next/navigation";
 import { Button, Form, Input, Select, type FormItemProps } from "antd";
 import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
-import dayjs from "../lib/dayjs";
-import StepLayout from "../components/StepLayout";
-import FieldHeader from "../components/FieldHeader";
-import CheckRadioGroup from "../components/CheckRadioGroup";
-import DateFields from "../components/DateFields";
+import dayjs from "../../lib/dayjs";
+import StepLayout from "../../components/StepLayout";
+import FieldHeader from "../../components/FieldHeader";
+import CheckRadioGroup from "../../components/CheckRadioGroup";
+import DateFields from "../../components/DateFields";
 import {
   COUNTRY_OPTIONS,
   COVER_OPTIONS,
@@ -23,11 +25,11 @@ import {
   PURPOSE_OPTIONS,
   formatPhone,
   phoneLength,
-} from "../constants/stepOne";
-import { stepOneSchema } from "../schemas/stepOne";
-import { saveStepOne } from "../store/formSlice";
-import { useAppDispatch, useAppStore } from "../store/hooks";
-import { fromStepOneForm, toStepOneForm } from "../store/serializers";
+} from "../../constants/stepOne";
+import { stepOneSchema } from "../../schemas/stepOne";
+import { saveStepOne } from "../../store/formSlice";
+import { useAppDispatch, useAppStore } from "../../store/hooks";
+import { fromStepOneForm, toStepOneForm } from "../../store/serializers";
 import "./StepOne.css";
 
 const STEP = 1;
@@ -36,6 +38,8 @@ const phoneCodeOptions = PHONE_CODES.map((code) => ({
   value: code.value,
   label: (
     <span className="phone-code">
+      {/* Tiny external SVG flags: next/image optimization adds nothing here */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         className="phone-code__flag"
         src={`https://flagcdn.com/${code.value}.svg`}
@@ -56,7 +60,7 @@ const errorProps = (
 
 const StepOne = () => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+  const router = useRouter();
   const store = useAppStore();
   // Read the saved draft once; subscribing would re-render on every synced keystroke
   const [defaultValues] = useState(() =>
@@ -102,12 +106,12 @@ const StepOne = () => {
   // and shows the same inline errors, going back never does.
   const goToStep = (target: number) => {
     if (target < STEP) {
-      navigate(`/step-${target}`);
+      router.push(`/step-${target}`);
       return;
     }
     handleSubmit((values) => {
       dispatch(saveStepOne(fromStepOneForm(values)));
-      navigate(`/step-${target}`);
+      router.push(`/step-${target}`);
     })();
   };
 

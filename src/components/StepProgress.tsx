@@ -1,4 +1,6 @@
-import { Link } from "react-router";
+"use client";
+
+import Link from "next/link";
 import "./StepProgress.css";
 
 // Segments are: the current step (not a link), reachable steps (links whose click is
@@ -36,7 +38,7 @@ const StepProgress = ({
         return (
           <Link
             key={step}
-            to={`/step-${step}`}
+            href={`/step-${step}`}
             className="step-progress__segment step-progress__segment--link"
             aria-label={label}
             onClick={(event) => {

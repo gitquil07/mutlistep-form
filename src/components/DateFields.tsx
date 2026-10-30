@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import type { Dayjs } from "dayjs";
 import dayjs from "../lib/dayjs";
