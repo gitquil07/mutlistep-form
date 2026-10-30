@@ -2,14 +2,14 @@ import { z } from "zod";
 
 const STORAGE_KEY = "insurance-form";
 // Bump when the stored shape changes so old drafts are dropped instead of breaking the form
-const VERSION = 2;
+const VERSION = 3;
 const MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
 
 // Shape check only (drafts may be incomplete); real validation is done by the step schemas
 const storedFormSchema = z.object({
   stepOne: z
     .object({
-      countries: z.array(z.string().nullable()),
+      countries: z.array(z.number().nullable()),
       coverType: z.string(),
       startDate: z.string().nullable(),
       endDate: z.string().nullable(),
@@ -18,7 +18,7 @@ const storedFormSchema = z.object({
       phone: z.string(),
     })
     .nullable(),
-  stepTwo: z.object({ program: z.string().nullable() }).nullable(),
+  stepTwo: z.object({ program: z.number().nullable() }).nullable(),
 });
 
 const clear = () => {

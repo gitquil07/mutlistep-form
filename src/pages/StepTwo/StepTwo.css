@@ -108,8 +108,8 @@
   white-space: nowrap;
 }
 
-.program-compare__yes {
-  color: var(--color-green);
+.program-compare .ant-table-cell {
+  white-space: nowrap;
 }
 
 .program-compare__no {

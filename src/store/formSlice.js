@@ -1,7 +1,8 @@
 import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { TOTAL_STEPS } from "../constants/steps";
 import { stepOneSchema } from "../schemas/stepOne";
-import { stepTwoSchema } from "../schemas/stepTwo";
+import { createStepTwoSchema } from "../schemas/stepTwo";
+import { getAvailablePrograms } from "../constants/stepTwo";
 import { toStepOneForm } from "./serializers";
 
 const initialState = {
@@ -30,11 +31,25 @@ export default formSlice.reducer;
 const isValid = (schema, values) =>
   values != null && schema.safeParse(values).success;
 
+// Programs sold for every country chosen in step one
+export const selectAvailablePrograms = createSelector(
+  [(state) => state.form.stepOne?.countries],
+  (countries) => getAvailablePrograms(countries ?? []),
+);
+
 export const selectStepCompletion = createSelector(
-  [(state) => state.form.stepOne, (state) => state.form.stepTwo],
-  (stepOne, stepTwo) => [
+  [
+    (state) => state.form.stepOne,
+    (state) => state.form.stepTwo,
+    selectAvailablePrograms,
+  ],
+  (stepOne, stepTwo, availablePrograms) => [
     stepOne != null && isValid(stepOneSchema, toStepOneForm(stepOne)),
-    isValid(stepTwoSchema, stepTwo),
+    // A program picked earlier stops counting once the countries no longer allow it
+    isValid(
+      createStepTwoSchema(availablePrograms.map((program) => program.id)),
+      stepTwo,
+    ),
   ],
 );
 

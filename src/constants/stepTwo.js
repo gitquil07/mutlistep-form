@@ -1,43 +1,56 @@
-export const PROGRAMS = [
-  {
-    value: "silver",
-    name: "Silver",
-    coverage: "20 000 EUR",
-    description: "Медицинское лечение, репатриация и другое",
-  },
-  {
-    value: "gold",
-    name: "Gold",
-    coverage: "50 000 EUR",
-    description: "Всё из Silver + несчастный случай и потеря багажа",
-  },
-  {
-    value: "stopvirus",
-    name: "Stopvirus (С покрытием COVID)",
-    coverage: "60 000 EUR",
-    description: "Всё вышеперечисленное + COVID",
-  },
-];
+import { COUNTRIES } from "../data/countries";
+import { PROGRAMS } from "../data/programs";
 
-export const PROGRAM_FEATURES = [
-  {
-    key: "medical",
-    label: "Медицинское лечение",
-    programs: ["silver", "gold", "stopvirus"],
-  },
-  {
-    key: "repatriation",
-    label: "Репатриация",
-    programs: ["silver", "gold", "stopvirus"],
-  },
-  {
-    key: "accident",
-    label: "Несчастный случай",
-    programs: ["gold", "stopvirus"],
-  },
-  { key: "baggage", label: "Потеря багажа", programs: ["gold", "stopvirus"] },
-  { key: "covid", label: "COVID-19", programs: ["stopvirus"] },
-];
+export const CURRENCY = "EUR";
 
-export const getProgram = (value) =>
-  PROGRAMS.find((program) => program.value === value);
+export const COVERAGE_LABELS = {
+  medicine: "Медицинские расходы",
+  accident: "Несчастный случай",
+  covid: "COVID-19",
+  evacuation: "Эвакуация",
+  transportation: "Транспортировка",
+  compensation: "Компенсация",
+};
+
+const amountFormat = new Intl.NumberFormat("ru-RU", {
+  maximumFractionDigits: 0,
+});
+
+export const formatAmount = (amount) =>
+  `${amountFormat.format(amount)} ${CURRENCY}`;
+
+export const getProgram = (id) => PROGRAMS.find((program) => program.id === id);
+
+// One policy has to cover every destination, so only programs sold for all of the
+// selected countries are offered. Empty rows (not chosen yet) are ignored.
+export const getAvailablePrograms = (countryIds) => {
+  const countries = countryIds
+    .map((id) => COUNTRIES.find((country) => country.id === id))
+    .filter(Boolean);
+  if (countries.length === 0) return [];
+
+  return PROGRAMS.filter((program) =>
+    countries.every((country) => country.programIds.includes(program.id)),
+  );
+};
+
+// Lowercases ordinary words for use mid-sentence but leaves abbreviations like COVID-19
+const lowerFirst = (text) =>
+  /^\p{Lu}\p{Ll}/u.test(text)
+    ? text.charAt(0).toLowerCase() + text.slice(1)
+    : text;
+
+// Short card subtitle from what the program covers; COVID goes first because it is
+// what sets the STOPVIRUS programs apart
+export const describeProgram = (program) => {
+  const covered = Object.entries(program.coverages)
+    .filter(([, amount]) => amount > 0)
+    .map(([key]) => key)
+    .sort((a, b) => (b === "covid") - (a === "covid"))
+    .map((key) => lowerFirst(COVERAGE_LABELS[key]));
+
+  const [first, second, ...rest] = covered;
+  const summary = [first, second].filter(Boolean).join(", ");
+  const text = rest.length ? `${summary} и другое` : summary;
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};

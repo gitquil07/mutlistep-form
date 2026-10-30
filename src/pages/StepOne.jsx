@@ -11,7 +11,7 @@ import FieldHeader from "../components/FieldHeader";
 import CheckRadioGroup from "../components/CheckRadioGroup";
 import DateFields from "../components/DateFields";
 import {
-  COUNTRIES,
+  COUNTRY_OPTIONS,
   COVER_OPTIONS,
   MAX_COUNTRIES,
   PHONE_CODES,
@@ -72,6 +72,9 @@ const StepOne = () => {
 
   const startDate = useWatch({ control, name: "startDate" });
   const phoneCode = useWatch({ control, name: "phoneCode" });
+  const chosenCountries = useWatch({ control, name: "countries" }).map(
+    (country) => country.value,
+  );
 
   // Keep every edit as a draft in the store (and so in localStorage), so leaving the
   // page or closing the browser never loses input. Drafts are not validated; the
@@ -138,7 +141,12 @@ const StepOne = () => {
                         variant="filled"
                         showSearch={{ optionFilterProp: "label" }}
                         placeholder="Выберите страну"
-                        options={COUNTRIES}
+                        // A country already picked in another row isn't offered again
+                        options={COUNTRY_OPTIONS.filter(
+                          (option) =>
+                            option.value === controlField.value ||
+                            !chosenCountries.includes(option.value),
+                        )}
                       />
                     )}
                   />

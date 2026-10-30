@@ -1,15 +1,9 @@
-export const COUNTRIES = [
-  { value: "lv", label: "Латвия" },
-  { value: "de", label: "Германия" },
-  { value: "fr", label: "Франция" },
-  { value: "it", label: "Италия" },
-  { value: "es", label: "Испания" },
-  { value: "tr", label: "Турция" },
-  { value: "ae", label: "ОАЭ" },
-  { value: "ge", label: "Грузия" },
-  { value: "th", label: "Таиланд" },
-  { value: "eg", label: "Египет" },
-];
+import { COUNTRIES } from "../data/countries";
+
+// Countries without any program (e.g. "Без страны") can't be insured, so they aren't offered
+export const COUNTRY_OPTIONS = COUNTRIES.filter(
+  (country) => country.programIds.length > 0,
+).map((country) => ({ value: country.id, label: country.name }));
 
 export const MAX_COUNTRIES = 5;
 

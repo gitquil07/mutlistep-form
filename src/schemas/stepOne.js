@@ -9,7 +9,7 @@ const date = z.custom((value) => dayjs.isDayjs(value) && value.isValid(), {
 export const stepOneSchema = z
   .object({
     countries: z
-      .array(z.object({ value: z.string().nullable() }))
+      .array(z.object({ value: z.number().nullable() }))
       .min(1)
       .superRefine((countries, ctx) => {
         countries.forEach((country, index) => {

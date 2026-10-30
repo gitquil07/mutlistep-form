@@ -4,53 +4,59 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector, useStore } from "react-redux";
 import { Navigate, useNavigate } from "react-router";
 import { App, Button, Modal, Radio, Table } from "antd";
-import {
-  CheckCircleFilled,
-  CheckOutlined,
-  MinusOutlined,
-} from "@ant-design/icons";
+import { CheckCircleFilled, MinusOutlined } from "@ant-design/icons";
 import StepLayout from "../../components/StepLayout";
 import {
-  PROGRAMS,
-  PROGRAM_FEATURES,
-  getProgram,
+  COVERAGE_LABELS,
+  describeProgram,
+  formatAmount,
 } from "../../constants/stepTwo";
-import { stepTwoSchema } from "../../schemas/stepTwo";
+import { createStepTwoSchema } from "../../schemas/stepTwo";
 import { TOTAL_STEPS } from "../../constants/steps";
 import {
   saveStepTwo,
+  selectAvailablePrograms,
   selectFurthestReachableStep,
 } from "../../store/formSlice";
 import "./StepTwo.css";
 
 const STEP = 2;
 
-const renderCompareCell = (program, row) => {
-  if (row.key === "coverage") {
-    return (
-      <span className="program-compare__coverage">{program.coverage}</span>
-    );
-  }
-  return row.programs.includes(program.value) ? (
-    <CheckOutlined className="program-compare__yes" aria-label="Входит" />
-  ) : (
-    <MinusOutlined className="program-compare__no" aria-label="Не входит" />
-  );
-};
-
-const compareColumns = [
-  { title: "", dataIndex: "label", key: "label" },
-  ...PROGRAMS.map((program) => ({
-    title: program.name,
-    key: program.value,
-    align: "center",
-    render: (_, row) => renderCompareCell(program, row),
+const compareRows = [
+  { key: "liability", label: "Общее покрытие", getAmount: (p) => p.liability },
+  ...Object.entries(COVERAGE_LABELS).map(([key, label]) => ({
+    key,
+    label,
+    getAmount: (p) => p.coverages[key],
   })),
 ];
 
-const compareRows = [
-  { key: "coverage", label: "Общее покрытие" },
-  ...PROGRAM_FEATURES,
+const renderCompareCell = (program, row) => {
+  const amount = row.getAmount(program);
+  return amount > 0 ? (
+    <span
+      className={
+        row.key === "liability" ? "program-compare__coverage" : undefined
+      }
+    >
+      {formatAmount(amount)}
+    </span>
+  ) : (
+    <MinusOutlined
+      className="program-compare__no"
+      aria-label="Не покрывается"
+    />
+  );
+};
+
+const getCompareColumns = (programs) => [
+  { title: "", dataIndex: "label", key: "label" },
+  ...programs.map((program) => ({
+    title: program.name,
+    key: program.id,
+    align: "center",
+    render: (_, row) => renderCompareCell(program, row),
+  })),
 ];
 
 const StepTwo = () => {
@@ -58,17 +64,26 @@ const StepTwo = () => {
   const navigate = useNavigate();
   const { message } = App.useApp();
   const furthestReachable = useSelector(selectFurthestReachableStep);
+  // Countries can't change while this page is open, so neither can the programs
+  const programs = useSelector(selectAvailablePrograms);
   const store = useStore();
-  const [defaultValues] = useState(() => ({
-    program: store.getState().form.stepTwo?.program ?? null,
-  }));
+  const [defaultValues] = useState(() => {
+    const saved = store.getState().form.stepTwo?.program;
+    // Drop a choice made for countries that have since changed
+    const stillAvailable = programs.some((program) => program.id === saved);
+    return { program: stillAvailable ? saved : null };
+  });
+  const [schema] = useState(() =>
+    createStepTwoSchema(programs.map((program) => program.id)),
+  );
   const [compareOpen, setCompareOpen] = useState(false);
 
   const { control, handleSubmit, subscribe } = useForm({
-    resolver: zodResolver(stepTwoSchema),
+    resolver: zodResolver(schema),
     defaultValues,
   });
-  const selected = getProgram(useWatch({ control, name: "program" }));
+  const selectedId = useWatch({ control, name: "program" });
+  const selected = programs.find((program) => program.id === selectedId);
 
   // Keep the selection as a draft in the store (and so in localStorage) as soon as it changes
   useEffect(
@@ -94,7 +109,10 @@ const StepTwo = () => {
     handleSubmit((values) => {
       dispatch(saveStepTwo(values));
       if (target > TOTAL_STEPS) {
-        message.success(`Программа ${getProgram(values.program).name} выбрана`);
+        const chosen = programs.find(
+          (program) => program.id === values.program,
+        );
+        message.success(`Программа ${chosen.name} выбрана`);
         return;
       }
       navigate(`/step-${target}`);
@@ -126,12 +144,12 @@ const StepTwo = () => {
               value={field.value}
               onChange={(event) => field.onChange(event.target.value)}
             >
-              {PROGRAMS.map((program) => {
-                const checked = field.value === program.value;
+              {programs.map((program) => {
+                const checked = field.value === program.id;
                 return (
                   <Radio
-                    key={program.value}
-                    value={program.value}
+                    key={program.id}
+                    value={program.id}
                     className={`program-card${checked ? " program-card--checked" : ""}`}
                     classNames={{
                       icon: "program-card__native",
@@ -143,10 +161,10 @@ const StepTwo = () => {
                       {program.name}
                     </span>
                     <span className="program-card__coverage">
-                      Общее покрытие - {program.coverage}
+                      Общее покрытие - {formatAmount(program.liability)}
                     </span>
                     <span className="program-card__description">
-                      {program.description}
+                      {describeProgram(program)}
                     </span>
                   </Radio>
                 );
@@ -185,7 +203,7 @@ const StepTwo = () => {
       >
         <Table
           className="program-compare"
-          columns={compareColumns}
+          columns={getCompareColumns(programs)}
           dataSource={compareRows}
           pagination={false}
           size="small"

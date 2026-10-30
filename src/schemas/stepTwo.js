@@ -1,8 +1,10 @@
 import { z } from "zod";
-import { PROGRAMS } from "../constants/stepTwo";
 
-export const stepTwoSchema = z.object({
-  program: z.enum(PROGRAMS.map((program) => program.value), {
-    message: "Выберите программу",
-  }),
-});
+// The valid choices depend on the countries picked in step one, so the schema is
+// built from the ids of the programs available for them
+export const createStepTwoSchema = (availableProgramIds) =>
+  z.object({
+    program: z.literal(availableProgramIds, {
+      message: "Выберите программу",
+    }),
+  });
