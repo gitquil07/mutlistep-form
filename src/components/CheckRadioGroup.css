@@ -29,7 +29,9 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding-inline: 0;
+  /* Same as antd's default label padding (paddingXS), which is what the Vite build shows;
+     stated here so the spacing doesn't depend on which stylesheet wins */
+  padding-inline: 8px;
   font-size: 12px;
   color: var(--color-text);
 }

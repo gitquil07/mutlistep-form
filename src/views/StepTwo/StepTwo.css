@@ -45,7 +45,8 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding-inline: 0;
+  /* Matches antd's default radio label padding, as rendered by the Vite build */
+  padding-inline: 8px;
 }
 
 .program-card__name {
