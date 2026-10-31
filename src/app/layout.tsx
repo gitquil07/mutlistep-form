@@ -12,7 +12,10 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: { children: ReactNode }) => (
   <html lang="ru">
     <body>
-      <AntdRegistry>
+      {/* antd styles go into `@layer antd`. Our CSS is unlayered, so it always wins over
+          antd's defaults no matter which stylesheet the browser loads last (antd's style
+          tags are injected after the app CSS here, which silently undid our icon colours) */}
+      <AntdRegistry layer>
         <Providers>{children}</Providers>
       </AntdRegistry>
     </body>
