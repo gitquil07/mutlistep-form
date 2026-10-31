@@ -12,9 +12,10 @@
   margin-inline-end: 0;
 }
 
+/* 32px between options = the 16px gap plus the 8px antd used to pad each side of a label */
 .check-radio-group--horizontal {
   flex-wrap: wrap;
-  gap: 8px 16px;
+  gap: 8px 32px;
 }
 
 .check-radio-group .check-radio__native {
@@ -25,13 +26,14 @@
   overflow: hidden;
 }
 
-.check-radio-group .check-radio__label {
+/* No side padding, so the checks line up with the field title. The selector includes
+   .ant-radio-wrapper to outrank antd's own label padding rule
+   (`.ant-radio-wrapper span.ant-radio + *`) in every build */
+.check-radio-group .ant-radio-wrapper .check-radio__label {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  /* Same as antd's default label padding (paddingXS), which is what the Vite build shows;
-     stated here so the spacing doesn't depend on which stylesheet wins */
-  padding-inline: 8px;
+  padding-inline: 0;
   font-size: 12px;
   color: var(--color-text);
 }
