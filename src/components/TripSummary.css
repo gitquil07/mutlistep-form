@@ -1,0 +1,166 @@
+.trip-summary {
+  width: 100%;
+  max-width: 360px;
+  padding: 20px 24px;
+  box-sizing: border-box;
+  background: var(--color-surface);
+  border-radius: 24px;
+  box-shadow: 0 12px 40px rgba(27, 43, 122, 0.08);
+}
+
+/* Collapsed bar at the top of the step card, used where the side card doesn't fit */
+.trip-summary-bar {
+  display: none;
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--color-option-bg);
+}
+
+/* Title and preview share a text baseline (they have different font sizes); the
+   chevron is centred on the row */
+.trip-summary-bar__toggle {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.trip-summary-bar__toggle:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+.trip-summary-bar__title {
+  flex: 0 0 auto;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+.trip-summary-bar__preview {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 12px;
+  color: var(--color-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trip-summary-bar__chevron {
+  flex: 0 0 auto;
+  align-self: center;
+  font-size: 12px;
+  color: var(--color-navy);
+  transition: transform 0.2s;
+}
+
+.trip-summary-bar__chevron--open {
+  transform: rotate(180deg);
+}
+
+.trip-summary-bar .trip-summary__list {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-muted-bg);
+}
+
+/* Narrow screens: the side card would end up below the form, so show the bar instead */
+@media (max-width: 880px) {
+  .trip-summary {
+    display: none;
+  }
+
+  .trip-summary-bar {
+    display: block;
+  }
+}
+
+.trip-summary__title {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+.trip-summary__list {
+  margin: 0;
+}
+
+.trip-summary__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 2px 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.trip-summary__label {
+  flex: 0 0 auto;
+  color: var(--color-text);
+  transition: color 0.2s;
+}
+
+.trip-summary__value {
+  min-width: 0;
+  margin: 0;
+}
+
+.trip-summary__edit {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: right;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.trip-summary__text {
+  overflow-wrap: anywhere;
+}
+
+.trip-summary__icon {
+  flex: 0 0 auto;
+  font-size: 11px;
+  color: #c4c8d3;
+  transition: color 0.2s;
+}
+
+/* Hovering a row highlights the whole line, as in the design */
+.trip-summary__row:has(.trip-summary__edit:hover) .trip-summary__label,
+.trip-summary__row:has(.trip-summary__edit:focus-visible) .trip-summary__label {
+  color: var(--color-navy);
+  font-weight: 600;
+}
+
+.trip-summary__edit:hover,
+.trip-summary__edit:focus-visible {
+  color: var(--color-navy);
+}
+
+.trip-summary__edit:hover .trip-summary__icon,
+.trip-summary__edit:focus-visible .trip-summary__icon {
+  color: var(--color-navy);
+}
+
+.trip-summary__edit:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
