@@ -7,7 +7,7 @@ import {
   type FieldError,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { Button, Form, Input, Select, type FormItemProps } from "antd";
 import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
 import dayjs from "../lib/dayjs";
@@ -57,6 +57,7 @@ const errorProps = (
 const StepOne = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const store = useAppStore();
   // Read the saved draft once; subscribing would re-render on every synced keystroke
   const [defaultValues] = useState(() =>
@@ -97,6 +98,21 @@ const StepOne = () => {
       }),
     [subscribe, dispatch],
   );
+
+  // Arriving from an edit icon in "Ваши данные": bring that field into view and focus it.
+  // Radio groups are focused through their checked option.
+  const focusField = (location.state as { focusField?: string } | null)
+    ?.focusField;
+  useEffect(() => {
+    if (!focusField) return;
+    const element = document.getElementById(focusField);
+    const target =
+      element instanceof HTMLInputElement
+        ? element
+        : element?.querySelector<HTMLInputElement>("input:checked, input");
+    element?.scrollIntoView({ block: "center" });
+    target?.focus({ preventScroll: true });
+  }, [focusField]);
 
   // Single entry point for "Далее" and the progress bar: going forward validates
   // and shows the same inline errors, going back never does.
@@ -195,6 +211,7 @@ const StepOne = () => {
             name="coverType"
             render={({ field }) => (
               <CheckRadioGroup
+                id="coverType"
                 aria-label="Тип покрытия"
                 options={COVER_OPTIONS}
                 value={field.value}
@@ -266,6 +283,7 @@ const StepOne = () => {
             name="purpose"
             render={({ field }) => (
               <CheckRadioGroup
+                id="purpose"
                 aria-label="Цель поездки"
                 direction="horizontal"
                 options={PURPOSE_OPTIONS}

@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Button } from "antd";
 import { ArrowLeftOutlined, InfoCircleFilled } from "@ant-design/icons";
 import StepProgress from "./StepProgress";
+import type { SummaryVariant } from "./TripSummary";
 import { TOTAL_STEPS } from "../constants/steps";
 import { selectFurthestReachableStep } from "../store/formSlice";
 import { useAppSelector } from "../store/hooks";
@@ -12,6 +13,9 @@ interface StepLayoutProps {
   title: string;
   onBack?: () => void;
   onStepClick: (step: number) => void;
+  // "Ваши данные": rendered as a card beside the step card and as a collapsed bar at its
+  // top; CSS shows the one that fits the screen
+  renderSummary?: (variant: SummaryVariant) => ReactNode;
   children: ReactNode;
 }
 
@@ -24,6 +28,7 @@ const StepLayout = ({
   title,
   onBack,
   onStepClick,
+  renderSummary,
   children,
 }: StepLayoutProps) => {
   const furthestReachable = useAppSelector(selectFurthestReachableStep);
@@ -31,6 +36,8 @@ const StepLayout = ({
   return (
     <main className="step-page">
       <div className="step-card">
+        {renderSummary?.("bar")}
+
         <div className="step-card__top">
           <StepProgress
             current={step}
@@ -60,6 +67,8 @@ const StepLayout = ({
           любое время
         </p>
       </div>
+
+      {renderSummary?.("card")}
     </main>
   );
 };

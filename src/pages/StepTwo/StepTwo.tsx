@@ -5,6 +5,7 @@ import { Navigate, useNavigate } from "react-router";
 import { App, Button, Modal, Radio, Table, type TableColumnsType } from "antd";
 import { CheckCircleFilled, MinusOutlined } from "@ant-design/icons";
 import StepLayout from "../../components/StepLayout";
+import TripSummary from "../../components/TripSummary";
 import {
   COVERAGE_KEYS,
   COVERAGE_LABELS,
@@ -142,6 +143,15 @@ const StepTwo = () => {
       title="Выберите программу"
       onBack={() => goToStep(STEP - 1)}
       onStepClick={goToStep}
+      renderSummary={(variant) => (
+        <TripSummary
+          variant={variant}
+          // Going back never validates, so this is a plain move to step one
+          onEdit={(field) =>
+            navigate("/step-1", { state: { focusField: field } })
+          }
+        />
+      )}
     >
       <form
         className="program-form"

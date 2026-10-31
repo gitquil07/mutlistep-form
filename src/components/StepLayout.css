@@ -1,8 +1,12 @@
+/* Card and optional aside (e.g. "Ваши данные") side by side; the aside wraps below the
+   card when there isn't room for both */
 .step-page {
   min-height: 100svh;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: flex-start;
+  gap: 24px;
   padding: 40px 16px;
   box-sizing: border-box;
 }
@@ -64,6 +68,7 @@
 @media (max-width: 480px) {
   .step-page {
     padding: 0;
+    gap: 0;
   }
 
   .step-card {
