@@ -280,7 +280,7 @@ const StepOne = () => {
 
         <section className="step-form__field">
           <FieldHeader
-            title="Цель поездки"
+            title="Цель"
             hint="От цели поездки зависят условия покрытия"
           />
           <Controller
@@ -289,7 +289,7 @@ const StepOne = () => {
             render={({ field }) => (
               <CheckRadioGroup
                 id="purpose"
-                aria-label="Цель поездки"
+                aria-label="Цель"
                 direction="horizontal"
                 options={PURPOSE_OPTIONS}
                 value={field.value}
